@@ -88,31 +88,31 @@ public class Program {
 
             TopDocs topDocs = null;
 
-            int demo = 4;
+            int demo = 6;
 
             switch (demo) {
-            case 1: {
+            case 1: { // TermQuery
                 TermQuery termQuery = new TermQuery(new Term("StoreOnly", "7"));
 
                 topDocs = indexSearcher.search(termQuery, 5);
             }
 
                 break;
-            case 2: {
+            case 2: { //TermQuery
                 TermQuery termQuery = new TermQuery(new Term("IndexOnly", "7"));
 
                 topDocs = indexSearcher.search(termQuery, 5);
             }
 
                 break;
-            case 3: {
+            case 3: { //TermQuery
                 TermQuery termQuery = new TermQuery(new Term("StoreIndex", "7"));
 
                 topDocs = indexSearcher.search(termQuery, 5);
             }
 
                 break;
-            case 4: {
+            case 4: { //BooleanQuery MUST
 
                 TermQuery termQuery6 = new TermQuery(new Term("IndexOnly", "6"));
                 TermQuery termQuery7 = new TermQuery(new Term("IndexOnly", "7"));
@@ -121,9 +121,49 @@ public class Program {
                         .add(new BooleanClause(termQuery6, Occur.MUST))
                         .add(new BooleanClause(termQuery7, Occur.MUST))
                         .build();
-                
+
                 topDocs = indexSearcher.search(booleanQuery, 20);
             }
+
+                break;
+            case 5: { //BooleanQuery SHOULD
+
+                TermQuery termQuery6 = new TermQuery(new Term("IndexOnly", "6"));
+                TermQuery termQuery7 = new TermQuery(new Term("IndexOnly", "7"));
+
+                BooleanQuery booleanQuery = new BooleanQuery.Builder()
+                        .add(new BooleanClause(termQuery6, Occur.SHOULD))
+                        .add(new BooleanClause(termQuery7, Occur.SHOULD))
+                        .build();
+
+                topDocs = indexSearcher.search(booleanQuery, 20);
+            }
+            
+            break;
+        case 6: { //BooleanQuery MUST & SHOULD
+
+            TermQuery termQuery5 = new TermQuery(new Term("IndexOnly", "5"));
+            TermQuery termQuery6 = new TermQuery(new Term("IndexOnly", "6"));
+            TermQuery termQuery7 = new TermQuery(new Term("IndexOnly", "7"));
+            TermQuery termQuery8 = new TermQuery(new Term("IndexOnly", "8"));
+
+            BooleanQuery must56 = new BooleanQuery.Builder()
+                    .add(new BooleanClause(termQuery5, Occur.MUST))
+                    .add(new BooleanClause(termQuery6, Occur.MUST))
+                    .build();
+            
+            BooleanQuery must78 = new BooleanQuery.Builder()
+                    .add(new BooleanClause(termQuery7, Occur.MUST))
+                    .add(new BooleanClause(termQuery8, Occur.MUST))
+                    .build();
+
+            BooleanQuery booleanQuery = new BooleanQuery.Builder()
+                    .add(new BooleanClause(must56, Occur.SHOULD))
+                    .add(new BooleanClause(must78, Occur.SHOULD))
+                    .build();
+
+            topDocs = indexSearcher.search(booleanQuery, 20);
+        }
 
                 break;
             default:
