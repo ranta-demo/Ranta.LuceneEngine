@@ -14,6 +14,9 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
@@ -83,44 +86,80 @@ public class Program {
 
             IndexSearcher indexSearcher = new IndexSearcher(indexReader);
 
-            {
+            TopDocs topDocs = null;
+
+            int demo = 4;
+
+            switch (demo) {
+            case 1: {
                 TermQuery termQuery = new TermQuery(new Term("StoreOnly", "7"));
 
-                TopDocs topDocs = indexSearcher.search(termQuery, 5);
+                topDocs = indexSearcher.search(termQuery, 5);
+            }
 
-                if (topDocs.scoreDocs.length > 0) {
+                break;
+            case 2: {
+                TermQuery termQuery = new TermQuery(new Term("IndexOnly", "7"));
 
-                    for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
+                topDocs = indexSearcher.search(termQuery, 5);
+            }
 
-                        Document document = indexReader.document(scoreDoc.doc);
+                break;
+            case 3: {
+                TermQuery termQuery = new TermQuery(new Term("StoreIndex", "7"));
 
-                        IndexableField storeOnlyField = document.getField("StoreOnly");
-                        if (storeOnlyField != null) {
-                            System.out.println(storeOnlyField.stringValue());
-                        } else {
-                            System.out.println("null");
-                        }
+                topDocs = indexSearcher.search(termQuery, 5);
+            }
 
-                        IndexableField indexOnlyField = document.getField("IndexOnly");
-                        if (indexOnlyField != null) {
-                            System.out.println(indexOnlyField.stringValue());
-                        } else {
-                            System.out.println("null");
-                        }
+                break;
+            case 4: {
 
-                        IndexableField storeIndexField = document.getField("StoreIndex");
-                        if (storeIndexField != null) {
-                            System.out.println(storeIndexField.stringValue());
-                        } else {
-                            System.out.println("null");
-                        }
+                TermQuery termQuery6 = new TermQuery(new Term("IndexOnly", "6"));
+                TermQuery termQuery7 = new TermQuery(new Term("IndexOnly", "7"));
 
-                        System.out.println("");
+                BooleanQuery booleanQuery = new BooleanQuery.Builder()
+                        .add(new BooleanClause(termQuery6, Occur.MUST))
+                        .add(new BooleanClause(termQuery7, Occur.MUST))
+                        .build();
+                
+                topDocs = indexSearcher.search(booleanQuery, 20);
+            }
 
+                break;
+            default:
+                break;
+            }
+
+            if (topDocs != null && topDocs.scoreDocs.length > 0) {
+
+                for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
+
+                    Document document = indexReader.document(scoreDoc.doc);
+
+//                    IndexableField storeOnlyField = document.getField("StoreOnly");
+//                    if (storeOnlyField != null) {
+//                        System.out.println(storeOnlyField.stringValue());
+//                    } else {
+//                        System.out.println("null");
+//                    }
+
+//                    IndexableField indexOnlyField = document.getField("IndexOnly");
+//                    if (indexOnlyField != null) {
+//                        System.out.println(indexOnlyField.stringValue());
+//                    } else {
+//                        System.out.println("null");
+//                    }
+
+                    IndexableField storeIndexField = document.getField("StoreIndex");
+                    if (storeIndexField != null) {
+                        System.out.println(storeIndexField.stringValue());
+                    } else {
+                        System.out.println("null");
                     }
-                }
 
-                System.out.println("----------------------------------");
+                    System.out.println("");
+
+                }
             }
 
             indexReader.close();
