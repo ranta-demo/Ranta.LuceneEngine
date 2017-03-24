@@ -17,6 +17,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.FuzzyQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
@@ -89,7 +90,7 @@ public class Program {
 
             TopDocs topDocs = null;
 
-            int demo = 6;
+            int demo = 7;
 
             switch (demo) {
             case 0: { //TermQuery
@@ -174,6 +175,15 @@ public class Program {
 
             topDocs = indexSearcher.search(booleanQuery, 20);
         }
+
+                break;
+            case 7: {
+
+                FuzzyQuery fuzzyQuery = new FuzzyQuery(new Term("StoreIndex", "Stoxe"));
+
+                topDocs = indexSearcher.search(fuzzyQuery, 5);
+
+            }
 
                 break;
             default:
