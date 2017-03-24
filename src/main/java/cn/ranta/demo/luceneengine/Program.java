@@ -62,6 +62,7 @@ public class Program {
 
                 FieldType storeIndexFieldType = new FieldType();
                 storeIndexFieldType.setStored(true);
+                //storeIndexFieldType.setTokenized(false);//不分词
                 storeIndexFieldType.setIndexOptions(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS);
                 document.add(new Field("StoreIndex", String.format("Store Index %d %d", i / 10, i % 10), storeIndexFieldType));
 
@@ -91,7 +92,16 @@ public class Program {
             int demo = 6;
 
             switch (demo) {
-            case 1: { // TermQuery
+            case 0: { //TermQuery
+
+                //setTokenized(false) to see this demo.
+                TermQuery termQuery = new TermQuery(new Term("StoreIndex", "Store Index 5 6"));
+
+                topDocs = indexSearcher.search(termQuery, 5);
+            }
+            
+                break;
+            case 1: { //TermQuery
                 TermQuery termQuery = new TermQuery(new Term("StoreOnly", "7"));
 
                 topDocs = indexSearcher.search(termQuery, 5);
